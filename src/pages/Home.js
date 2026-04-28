@@ -263,7 +263,6 @@ export default function Home() {
 
   const goHome = () => {
     setActiveSection('home');
-    setSearched(false);
     setMovies([]);
     setQuery('');
     setActiveRegion(null);

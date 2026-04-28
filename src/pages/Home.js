@@ -135,7 +135,6 @@ export default function Home() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [skeletonVisible, setSkeletonVisible] = useState(true);
-
   const [activeSection, setActiveSection] = useState('home');
   const [genre, setGenre] = useState('All');
   const [page, setPage] = useState(1);
@@ -206,7 +205,6 @@ export default function Home() {
   const searchMovies = useCallback(async (q = query, p = 1, g = genre) => {
     if (!q.trim()) return;
     setLoading(true);
-    setSearched(true);
     setActiveSection('search');
     let searchQ = q;
     if (g !== 'All') searchQ = `${q} ${g}`;

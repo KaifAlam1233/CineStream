@@ -5,8 +5,8 @@ const API_KEY = process.env.REACT_APP_OMDB_KEY;
 const BASE_URL = 'https://www.omdbapi.com/';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
-const fetchMovies = async (query, page = 1) => {
-  const res = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=movie&page=${page}`);
+const fetchMovies = async (query, page = 1, type = 'movie') => {
+  const res = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=${type}&page=${page}`);
   return res.json();
 };
 const fetchDetail = async (imdbID) => {
@@ -131,6 +131,7 @@ export default function Home() {
   const [bollywood, setBollywood] = useState([]);
   const [hollywood, setHollywood] = useState([]);
   const [southIndian, setSouthIndian] = useState([]);
+const [webSeries, setWebSeries] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [skeletonVisible, setSkeletonVisible] = useState(true);
@@ -197,6 +198,13 @@ export default function Home() {
         if (d.Response === 'True') sAll.push(...d.Search.slice(0, 3));
       }
       setSouthIndian(sAll.slice(0, 9));
+      const wsTerms = ['Breaking Bad', 'Money Heist', 'Mirzapur'];
+const wsAll = [];
+for (const t of wsTerms) {
+  const d = await fetchMovies(t, 1, 'series');
+  if (d.Response === 'True') wsAll.push(...d.Search.slice(0, 3));
+}
+setWebSeries(wsAll.slice(0, 9));
     } catch (e) { console.error(e); }
     setSkeletonVisible(false);
   };
@@ -225,10 +233,10 @@ export default function Home() {
     setMovies([]);
   };
 
-  const regionSearch = async (term, p = 1) => {
+  const regionSearch = async (term, p = 1, type = 'movie') => {
     setLoading(true);
     setQuery(term);
-    const data = await fetchMovies(term, p);
+    const data = await fetchMovies(term, p, type);
     if (data.Response === 'True') {
       setMovies(p === 1 ? data.Search : prev => [...prev, ...data.Search]);
       setTotalResults(parseInt(data.totalResults));
@@ -291,6 +299,7 @@ export default function Home() {
           <button className={`nav-btn ${activeSection === 'region' && activeRegion === 'hollywood' ? 'nav-active' : ''}`} onClick={() => searchRegion('hollywood')}>🎬 Hollywood</button>
           <button className={`nav-btn ${activeSection === 'region' && activeRegion === 'south' ? 'nav-active' : ''}`} onClick={() => searchRegion('south')}>🌴 South Indian</button>
           <button className={`nav-btn ${activeSection === 'watchlist' ? 'nav-active' : ''}`} onClick={() => setActiveSection('watchlist')}>❤️ Watchlist <span className="fav-count">{favorites.length}</span></button>
+          <button className={`nav-btn ${activeSection === 'webseries' ? 'nav-active' : ''}`} onClick={() => setActiveSection('webseries')}>📺 Web Series</button>
         </div>
       </nav>
 
@@ -355,7 +364,28 @@ export default function Home() {
             )}
           </section>
         )}
-
+{activeSection === 'webseries' && (
+  <section className="results-section">
+    <div className="region-header">
+      <h2 className="section-title">📺 Web Series & Shows</h2>
+      <div className="region-tags">
+        {['Breaking Bad', 'Money Heist', 'Mirzapur', 'Sacred Games', 'Stranger Things', 'Game of Thrones', 'The Family Man', 'Panchayat'].map(t => (
+          <span key={t} className="pop-tag" onClick={() => regionSearch(t, 1, 'series')}>{t}</span>
+        ))}
+      </div>
+    </div>
+    {loading
+      ? <div className="movies-grid">{Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>
+      : movies.length > 0 ? renderGrid(movies) : renderGrid(webSeries)}
+    {movies.length > 0 && movies.length < totalResults && (
+      <div className="load-more-wrap">
+        <button className="load-more-btn" onClick={() => regionSearch(query, page + 1, 'series')} disabled={loading}>
+          {loading ? 'Loading...' : `Load More (${totalResults - movies.length} left)`}
+        </button>
+      </div>
+    )}
+  </section>
+)}
         {activeSection === 'watchlist' && (
           <section className="results-section">
             <h2 className="section-title">❤️ My Watchlist</h2>
@@ -448,7 +478,13 @@ export default function Home() {
                 <button className="see-all-btn" onClick={() => searchRegion('south')}>See All →</button>
               </div>
               {renderGrid(southIndian)}
-            </section>
+            </section><section className="results-section">
+  <div className="section-row">
+    <h2 className="section-title">📺 Web Series</h2>
+    <button className="see-all-btn" onClick={() => setActiveSection('webseries')}>See All →</button>
+  </div>
+  {renderGrid(webSeries)}
+</section>
           </>
         )}
       </main>

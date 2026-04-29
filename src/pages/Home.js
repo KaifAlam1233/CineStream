@@ -283,10 +283,6 @@ export default function Home() {
     <div className="home">
       {showInstall && <InstallBanner onDismiss={() => setShowInstall(false)} onInstall={handleInstall} />}
 
-     <div className="install-bar">
-  <span>📲 Install CineStream App — Watch movies anytime!</span>
-  <button className="btn-install-top" onClick={handleInstall}>⬇ Install App</button>
-</div>
 <nav className="navbar">
         <span className="logo" onClick={goHome} style={{ cursor: 'pointer' }}>Cine<span>Stream</span></span>
         <div className="nav-links">

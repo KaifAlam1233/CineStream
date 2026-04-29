@@ -95,7 +95,6 @@ function Modal({ movie, onClose }) {
           </div>
         </div>
         <div className="modal-actions">
-          <a href={playerUrl} target="_blank" rel="noreferrer" className="btn-watch">↗ Full Player</a>
           <a href={trailerUrl} target="_blank" rel="noreferrer" className="btn-trailer">🎭 YouTube Trailer</a>
           <a href={imdbUrl} target="_blank" rel="noreferrer" className="btn-imdb">⭐ IMDb</a>
         </div>
@@ -284,7 +283,11 @@ export default function Home() {
     <div className="home">
       {showInstall && <InstallBanner onDismiss={() => setShowInstall(false)} onInstall={handleInstall} />}
 
-      <nav className="navbar">
+     <div className="install-bar">
+  <span>📲 Install CineStream App — Watch movies anytime!</span>
+  <button className="btn-install-top" onClick={handleInstall}>⬇ Install App</button>
+</div>
+<nav className="navbar">
         <span className="logo" onClick={goHome} style={{ cursor: 'pointer' }}>Cine<span>Stream</span></span>
         <div className="nav-links">
           <button className={`nav-btn ${activeSection === 'home' ? 'nav-active' : ''}`} onClick={goHome}>🏠 Home</button>

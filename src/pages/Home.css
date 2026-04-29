@@ -53,8 +53,8 @@
 
 /* ── NAVBAR ─────────────────────────────────────────────────── */
 .navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+ position: fixed;
+  top: 2.2rem; left: 0; right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -541,4 +541,29 @@
   .nav-links { gap: 0.15rem; }
   .nav-btn { padding: 0.3rem 0.5rem; font-size: 0.68rem; }
   .movies-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+}
+.install-bar {
+  background: var(--red);
+  color: white;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+}
+.btn-install-top {
+  background: white;
+  color: var(--red);
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 1rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
 }

@@ -4,7 +4,6 @@ import './Home.css';
 const API_KEY = process.env.REACT_APP_OMDB_KEY;
 const BASE_URL = 'https://www.omdbapi.com/';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
 const fetchMovies = async (query, page = 1, type = 'movie') => {
   const res = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=${type}&page=${page}`);
   return res.json();
@@ -14,7 +13,6 @@ const fetchDetail = async (imdbID) => {
   return res.json();
 };
 
-// ── Skeleton card ─────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
     <div className="skeleton-card">
@@ -27,7 +25,6 @@ function SkeletonCard() {
   );
 }
 
-// ── Movie card ────────────────────────────────────────────────────────────────
 function MovieCard({ movie, onClick, onFav, isFav }) {
   const hasPoster = movie.Poster && movie.Poster !== 'N/A';
   return (
@@ -54,30 +51,46 @@ function MovieCard({ movie, onClick, onFav, isFav }) {
   );
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ movie, onClose }) {
-  const [tab, setTab] = useState('watch');
+  const [tab, setTab] = useState('trailer');
   const hasPoster = movie.Poster && movie.Poster !== 'N/A';
-  const playerUrl = `https://streamimdb.ru/embed/movie/${movie.imdbID}`;
-  const trailerUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.Title + ' ' + movie.Year + ' official trailer')}`;
+
+  const trailerEmbed = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(movie.Title + ' ' + movie.Year + ' official trailer')}`;
   const imdbUrl = `https://www.imdb.com/title/${movie.imdbID}/`;
+  const netflixUrl = `https://www.netflix.com/search?q=${encodeURIComponent(movie.Title)}`;
+  const primeUrl = `https://www.amazon.com/s?k=${encodeURIComponent(movie.Title)}&i=instant-video`;
+  const hotstarUrl = `https://www.hotstar.com/in/search?q=${encodeURIComponent(movie.Title)}`;
+  const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.Title + ' ' + movie.Year + ' full movie free')}`;
 
   return (
     <div className="modal-overlay" onClick={e => e.target.className === 'modal-overlay' && onClose()}>
       <div className="modal">
         <button className="modal-close" onClick={onClose}>✕</button>
         <div className="modal-tabs">
-          <button className={tab === 'watch' ? 'mtab active' : 'mtab'} onClick={() => setTab('watch')}>▶ Watch Movie</button>
-          <button className={tab === 'trailer' ? 'mtab active' : 'mtab'} onClick={() => setTab('trailer')}>🎭 Trailer</button>
+          <button className={tab === 'trailer' ? 'mtab active' : 'mtab'} onClick={() => setTab('trailer')}>🎬 Trailer</button>
+          <button className={tab === 'watch' ? 'mtab active' : 'mtab'} onClick={() => setTab('watch')}>▶ Where to Watch</button>
         </div>
         <div className="player-wrap">
-          {tab === 'watch'
-            ? <iframe src={playerUrl} allowFullScreen allow="autoplay; fullscreen" title={movie.Title} />
-            : <iframe
-                src={`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(movie.Title + ' ' + movie.Year + ' official trailer')}`}
-                allowFullScreen allow="autoplay; fullscreen" title="Trailer"
-              />
-          }
+          {tab === 'trailer' ? (
+            <iframe
+              src={trailerEmbed}
+              allowFullScreen
+              allow="autoplay; fullscreen"
+              title={`${movie.Title} Trailer`}
+            />
+          ) : (
+            <div className="where-to-watch">
+              <p className="wtw-title">🎬 Watch <strong>{movie.Title}</strong> on:</p>
+              <div className="wtw-buttons">
+                <a href={youtubeUrl} target="_blank" rel="noreferrer" className="wtw-btn wtw-youtube">▶ YouTube (Free)</a>
+                <a href={netflixUrl} target="_blank" rel="noreferrer" className="wtw-btn wtw-netflix">Netflix</a>
+                <a href={primeUrl} target="_blank" rel="noreferrer" className="wtw-btn wtw-prime">Prime Video</a>
+                <a href={hotstarUrl} target="_blank" rel="noreferrer" className="wtw-btn wtw-hotstar">Disney+ Hotstar</a>
+                <a href={imdbUrl} target="_blank" rel="noreferrer" className="wtw-btn wtw-imdb">⭐ IMDb</a>
+              </div>
+              <p className="wtw-note">💡 Tip: Check YouTube first — many movies are free legally there.</p>
+            </div>
+          )}
         </div>
         <div className="modal-info">
           {hasPoster && <img className="modal-poster" src={movie.Poster} alt={movie.Title} />}
@@ -95,7 +108,7 @@ function Modal({ movie, onClose }) {
           </div>
         </div>
         <div className="modal-actions">
-          <a href={trailerUrl} target="_blank" rel="noreferrer" className="btn-trailer">🎭 YouTube Trailer</a>
+          <a href={youtubeUrl} target="_blank" rel="noreferrer" className="btn-trailer">▶ YouTube</a>
           <a href={imdbUrl} target="_blank" rel="noreferrer" className="btn-imdb">⭐ IMDb</a>
         </div>
       </div>
@@ -103,7 +116,6 @@ function Modal({ movie, onClose }) {
   );
 }
 
-// ── Install Prompt ────────────────────────────────────────────────────────────
 function InstallBanner({ onDismiss, onInstall }) {
   return (
     <div className="install-banner">
@@ -122,7 +134,6 @@ function InstallBanner({ onDismiss, onInstall }) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
 export default function Home() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
@@ -131,7 +142,7 @@ export default function Home() {
   const [bollywood, setBollywood] = useState([]);
   const [hollywood, setHollywood] = useState([]);
   const [southIndian, setSouthIndian] = useState([]);
-const [webSeries, setWebSeries] = useState([]);
+  const [webSeries, setWebSeries] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [skeletonVisible, setSkeletonVisible] = useState(true);
@@ -152,59 +163,52 @@ const [webSeries, setWebSeries] = useState([]);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  useEffect(() => {
-    loadHomeSections();
-  }, []);
+  useEffect(() => { loadHomeSections(); }, []);
 
   const loadHomeSections = async () => {
     setSkeletonVisible(true);
     try {
-      const trendingTerms = ['Avengers', 'Inception', 'Interstellar'];
       const tAll = [];
-      for (const t of trendingTerms) {
+      for (const t of ['Avengers', 'Inception', 'Interstellar']) {
         const d = await fetchMovies(t);
         if (d.Response === 'True') tAll.push(...d.Search.slice(0, 3));
       }
       setTrending(tAll.slice(0, 9));
 
-      const trTerms = ['Godfather', 'Dark Knight', 'Schindler'];
       const trAll = [];
-      for (const t of trTerms) {
+      for (const t of ['Godfather', 'Dark Knight', 'Schindler']) {
         const d = await fetchMovies(t);
         if (d.Response === 'True') trAll.push(...d.Search.slice(0, 3));
       }
       setTopRated(trAll.slice(0, 9));
 
-      const bTerms = ['Dilwale', 'Dangal', 'Kabir Singh'];
       const bAll = [];
-      for (const t of bTerms) {
+      for (const t of ['Dilwale', 'Dangal', 'Kabir Singh']) {
         const d = await fetchMovies(t);
         if (d.Response === 'True') bAll.push(...d.Search.slice(0, 3));
       }
       setBollywood(bAll.slice(0, 9));
 
-      const hTerms = ['Spider-Man', 'Fast Furious', 'Mission Impossible'];
       const hAll = [];
-      for (const t of hTerms) {
+      for (const t of ['Spider-Man', 'Fast Furious', 'Mission Impossible']) {
         const d = await fetchMovies(t);
         if (d.Response === 'True') hAll.push(...d.Search.slice(0, 3));
       }
       setHollywood(hAll.slice(0, 9));
 
-      const sTerms = ['KGF', 'Pushpa', 'RRR'];
       const sAll = [];
-      for (const t of sTerms) {
+      for (const t of ['KGF', 'Pushpa', 'RRR']) {
         const d = await fetchMovies(t);
         if (d.Response === 'True') sAll.push(...d.Search.slice(0, 3));
       }
       setSouthIndian(sAll.slice(0, 9));
-      const wsTerms = ['Breaking Bad', 'Money Heist', 'Mirzapur'];
-const wsAll = [];
-for (const t of wsTerms) {
-  const d = await fetchMovies(t, 1, 'series');
-  if (d.Response === 'True') wsAll.push(...d.Search.slice(0, 3));
-}
-setWebSeries(wsAll.slice(0, 9));
+
+      const wsAll = [];
+      for (const t of ['Breaking Bad', 'Money Heist', 'Mirzapur']) {
+        const d = await fetchMovies(t, 1, 'series');
+        if (d.Response === 'True') wsAll.push(...d.Search.slice(0, 3));
+      }
+      setWebSeries(wsAll.slice(0, 9));
     } catch (e) { console.error(e); }
     setSkeletonVisible(false);
   };
@@ -213,25 +217,16 @@ setWebSeries(wsAll.slice(0, 9));
     if (!q.trim()) return;
     setLoading(true);
     setActiveSection('search');
-    let searchQ = q;
-    if (g !== 'All') searchQ = `${q} ${g}`;
-    const data = await fetchMovies(searchQ, p);
+    const data = await fetchMovies(g !== 'All' ? `${q} ${g}` : q, p);
     if (data.Response === 'True') {
       setMovies(p === 1 ? data.Search : prev => [...prev, ...data.Search]);
       setTotalResults(parseInt(data.totalResults));
-    } else {
-      setMovies([]);
-      setTotalResults(0);
-    }
+    } else { setMovies([]); setTotalResults(0); }
     setPage(p);
     setLoading(false);
   }, [query, genre]);
 
-  const searchRegion = (region) => {
-    setActiveSection('region');
-    setActiveRegion(region);
-    setMovies([]);
-  };
+  const searchRegion = (region) => { setActiveSection('region'); setActiveRegion(region); setMovies([]); };
 
   const regionSearch = async (term, p = 1, type = 'movie') => {
     setLoading(true);
@@ -245,10 +240,7 @@ setWebSeries(wsAll.slice(0, 9));
     setLoading(false);
   };
 
-  const openMovie = async (imdbID) => {
-    const data = await fetchDetail(imdbID);
-    setSelected(data);
-  };
+  const openMovie = async (imdbID) => { const data = await fetchDetail(imdbID); setSelected(data); };
 
   const toggleFav = (movie) => {
     setFavorites(prev => {
@@ -268,12 +260,7 @@ setWebSeries(wsAll.slice(0, 9));
     if (outcome === 'accepted') setShowInstall(false);
   };
 
-  const goHome = () => {
-    setActiveSection('home');
-    setMovies([]);
-    setQuery('');
-    setActiveRegion(null);
-  };
+  const goHome = () => { setActiveSection('home'); setMovies([]); setQuery(''); setActiveRegion(null); };
 
   const renderGrid = (list, emptyMsg = 'No movies found.') => (
     skeletonVisible
@@ -281,17 +268,17 @@ setWebSeries(wsAll.slice(0, 9));
       : list.length === 0
         ? <p className="no-results">{emptyMsg}</p>
         : <div className="movies-grid">
-          {list.map(m => (
-            <MovieCard key={m.imdbID} movie={m} onClick={() => openMovie(m.imdbID)} onFav={toggleFav} isFav={isFav(m.imdbID)} />
-          ))}
-        </div>
+            {list.map(m => (
+              <MovieCard key={m.imdbID} movie={m} onClick={() => openMovie(m.imdbID)} onFav={toggleFav} isFav={isFav(m.imdbID)} />
+            ))}
+          </div>
   );
 
   return (
     <div className="home">
       {showInstall && <InstallBanner onDismiss={() => setShowInstall(false)} onInstall={handleInstall} />}
 
-<nav className="navbar">
+      <nav className="navbar">
         <span className="logo" onClick={goHome} style={{ cursor: 'pointer' }}>Cine<span>Stream</span></span>
         <div className="nav-links">
           <button className={`nav-btn ${activeSection === 'home' ? 'nav-active' : ''}`} onClick={goHome}>🏠 Home</button>
@@ -311,11 +298,9 @@ setWebSeries(wsAll.slice(0, 9));
             <h1 className="hero-title">Watch Any<br /><span>Movie Free</span></h1>
             <p className="hero-sub">Search millions of movies. Stream instantly — no signup required.</p>
             <div className="search-wrap">
-              <input
-                type="text" className="search-box" placeholder="Search movies..."
+              <input type="text" className="search-box" placeholder="Search movies..."
                 value={query} onChange={e => setQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && searchMovies()}
-              />
+                onKeyDown={e => e.key === 'Enter' && searchMovies()} />
               <button className="search-btn" onClick={() => searchMovies()}>Search</button>
             </div>
             <div className="popular-tags">
@@ -330,11 +315,9 @@ setWebSeries(wsAll.slice(0, 9));
 
       {activeSection !== 'home' && (
         <div className="top-search-bar">
-          <input
-            type="text" className="search-box-top" placeholder="Search movies..."
+          <input type="text" className="search-box-top" placeholder="Search movies..."
             value={query} onChange={e => setQuery(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && searchMovies()}
-          />
+            onKeyDown={e => e.key === 'Enter' && searchMovies()} />
           <button className="search-btn" onClick={() => searchMovies()}>Search</button>
         </div>
       )}
@@ -364,28 +347,30 @@ setWebSeries(wsAll.slice(0, 9));
             )}
           </section>
         )}
-{activeSection === 'webseries' && (
-  <section className="results-section">
-    <div className="region-header">
-      <h2 className="section-title">📺 Web Series & Shows</h2>
-      <div className="region-tags">
-        {['Breaking Bad', 'Money Heist', 'Mirzapur', 'Sacred Games', 'Stranger Things', 'Game of Thrones', 'The Family Man', 'Panchayat'].map(t => (
-          <span key={t} className="pop-tag" onClick={() => regionSearch(t, 1, 'series')}>{t}</span>
-        ))}
-      </div>
-    </div>
-    {loading
-      ? <div className="movies-grid">{Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>
-      : movies.length > 0 ? renderGrid(movies) : renderGrid(webSeries)}
-    {movies.length > 0 && movies.length < totalResults && (
-      <div className="load-more-wrap">
-        <button className="load-more-btn" onClick={() => regionSearch(query, page + 1, 'series')} disabled={loading}>
-          {loading ? 'Loading...' : `Load More (${totalResults - movies.length} left)`}
-        </button>
-      </div>
-    )}
-  </section>
-)}
+
+        {activeSection === 'webseries' && (
+          <section className="results-section">
+            <div className="region-header">
+              <h2 className="section-title">📺 Web Series & Shows</h2>
+              <div className="region-tags">
+                {['Breaking Bad', 'Money Heist', 'Mirzapur', 'Sacred Games', 'Stranger Things', 'Game of Thrones', 'The Family Man', 'Panchayat'].map(t => (
+                  <span key={t} className="pop-tag" onClick={() => regionSearch(t, 1, 'series')}>{t}</span>
+                ))}
+              </div>
+            </div>
+            {loading
+              ? <div className="movies-grid">{Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>
+              : movies.length > 0 ? renderGrid(movies) : renderGrid(webSeries)}
+            {movies.length > 0 && movies.length < totalResults && (
+              <div className="load-more-wrap">
+                <button className="load-more-btn" onClick={() => regionSearch(query, page + 1, 'series')} disabled={loading}>
+                  {loading ? 'Loading...' : `Load More (${totalResults - movies.length} left)`}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
         {activeSection === 'watchlist' && (
           <section className="results-section">
             <h2 className="section-title">❤️ My Watchlist</h2>
@@ -478,13 +463,14 @@ setWebSeries(wsAll.slice(0, 9));
                 <button className="see-all-btn" onClick={() => searchRegion('south')}>See All →</button>
               </div>
               {renderGrid(southIndian)}
-            </section><section className="results-section">
-  <div className="section-row">
-    <h2 className="section-title">📺 Web Series</h2>
-    <button className="see-all-btn" onClick={() => setActiveSection('webseries')}>See All →</button>
-  </div>
-  {renderGrid(webSeries)}
-</section>
+            </section>
+            <section className="results-section">
+              <div className="section-row">
+                <h2 className="section-title">📺 Web Series</h2>
+                <button className="see-all-btn" onClick={() => setActiveSection('webseries')}>See All →</button>
+              </div>
+              {renderGrid(webSeries)}
+            </section>
           </>
         )}
       </main>

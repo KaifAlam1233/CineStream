@@ -542,3 +542,25 @@
   .nav-btn { padding: 0.3rem 0.5rem; font-size: 0.68rem; }
   .movies-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 }
+.where-to-watch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 2rem;
+  background: #0f0f1a;
+  border-radius: 8px;
+  text-align: center;
+}
+.wtw-title { color: #ccc; font-size: 1.1rem; margin-bottom: 1.5rem; }
+.wtw-title strong { color: #fff; }
+.wtw-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-bottom: 1.5rem; }
+.wtw-btn { padding: 0.75rem 1.4rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: transform 0.2s; color: #fff; }
+.wtw-btn:hover { transform: scale(1.05); opacity: 0.9; }
+.wtw-youtube  { background: #ff0000; }
+.wtw-netflix  { background: #e50914; }
+.wtw-prime    { background: #00a8e0; }
+.wtw-hotstar  { background: #1f80e0; }
+.wtw-imdb     { background: #f5c518; color: #000; }
+.wtw-note { color: #888; font-size: 0.85rem; }
